@@ -33,6 +33,7 @@ int main() {
 
         auto start = std::chrono::high_resolution_clock::now();
         window.clear();
+        IF_ERR_RETURN(pictureParametresUpdate(&graphInt));
         if (graphInt.wasPictureUpdate) {
             calculateMatrixOfPointsInfo(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             graphInt.wasPictureUpdate = false;
@@ -43,7 +44,7 @@ int main() {
         auto end   = std::chrono::high_resolution_clock::now();
 
         fps = (float)1e9/(float)std::chrono::duration_cast<std::chrono::nanoseconds>(end-start).count();
-        printf("fps: %f\n", fps);
+        //printf("fps: %f\n", fps);
     }
 
     return 0;

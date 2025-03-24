@@ -1,6 +1,11 @@
 #include "graphicalInterface.hpp"
 //#include "mandelbrotColoring.cpp"
 
+const float SPEED_MOVEMENT  = 0.1;
+const float SCALING_SPEED   = 0.1;
+const float INC_SCALE_KOEF  = 1 + SCALING_SPEED;
+const float DEC_SCALE_KOEF  = 1 - SCALING_SPEED;
+
 Errors constructGraphicalInterface(
     GraphicalInterface* graphInt,
     sf::RenderWindow* window,
@@ -35,6 +40,47 @@ Errors windowEventsLoop(
     while (graphInt->window->pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             graphInt->window->close();
+        }
+    }
+
+    return STATUS_OK;
+}
+
+Errors pictureParametresUpdate(
+    GraphicalInterface* graphInt
+) {
+    IF_ARG_NULL_RETURN(graphInt);
+
+    float moveSpeed = SPEED_MOVEMENT / graphInt->pictureParams.scaleFactor;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        printf("scale factor : %f\n", graphInt->pictureParams.scaleFactor);
+        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
+        graphInt->pictureParams.pictureCenterX -= moveSpeed;
+        graphInt->wasPictureUpdate = true;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
+        graphInt->pictureParams.pictureCenterX += moveSpeed;
+        graphInt->wasPictureUpdate = true;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+        printf("scale factor : %f\n", graphInt->pictureParams.scaleFactor);
+        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
+        graphInt->pictureParams.pictureCenterY += moveSpeed;
+        graphInt->wasPictureUpdate = true;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
+        graphInt->pictureParams.pictureCenterY -= moveSpeed;
+        graphInt->wasPictureUpdate = true;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+            graphInt->pictureParams.scaleFactor *= DEC_SCALE_KOEF;
+            graphInt->wasPictureUpdate = true;
+        } else {
+            graphInt->pictureParams.scaleFactor *= INC_SCALE_KOEF;
+            graphInt->wasPictureUpdate = true;
         }
     }
 

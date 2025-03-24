@@ -30,7 +30,7 @@ Errors windowEventsLoop(
 
 // changes pictureCenterX, pictureCenterY and scale factor based on which key is pressedx
 Errors pictureParametresUpdate(
-    GraphicalInterface graphInt
+    GraphicalInterface* graphInt
 );
 
 bool isWindowOpen(
