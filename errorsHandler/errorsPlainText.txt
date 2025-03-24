@@ -1,0 +1,3 @@
+ERROR_UNPACK(INVALID_ARGUMENT,                  1, "invalid argument, possibly set to NULL\n")
+ERROR_UNPACK(MEMORY_ALLOCATION,                 2, "memory allocation error\n")
+
