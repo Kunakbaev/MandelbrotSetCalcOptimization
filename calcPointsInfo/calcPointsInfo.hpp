@@ -5,6 +5,8 @@
 #include "../graphicalInterface/pictureParamsStruct.hpp"
 #include "pointsInfoStruct.hpp"
 
+int getSimulationMaxNumOfIters();
+
 Errors constructPointsInfoStruct(
     PointsInfo*         pointsInfo,
     const size_t        windowHeight,
@@ -12,6 +14,20 @@ Errors constructPointsInfoStruct(
 );
 
 Errors calculateMatrixOfPointsInfo(
+    const size_t                    windowHeight,
+    const size_t                    windowWidth,
+    const PictureParameters*        picParams,
+    PointsInfo*                     pointsInfo
+);
+
+Errors calculateMatrixOfPointsInfoOptimizedWithIntrinsics(
+    const size_t                    windowHeight,
+    const size_t                    windowWidth,
+    const PictureParameters*        picParams,
+    PointsInfo*                     pointsInfo
+);
+
+Errors calculateMatrixOfPointsInfoHighResolution(
     const size_t                    windowHeight,
     const size_t                    windowWidth,
     const PictureParameters*        picParams,

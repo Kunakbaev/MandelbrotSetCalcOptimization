@@ -45,9 +45,14 @@ void precountGradientColorsArray();
 
 void showGradient(sf::RenderWindow* window);
 
-sf::Color getPixelColorBasedOnIterationAndPoint(
-    size_t numOfItersInteger,
-    float  pointRadius
+sf::Color getPixelColorDoubleLogSmoothing(
+    int   numOfItersInteger,
+    float pointRadius
+);
+
+sf::Color getPixelColorSimple(
+    int   numOfItersInteger,
+    int   maxNumOfIters
 );
 
 Errors drawBasedOnPointsInfoMatrix(

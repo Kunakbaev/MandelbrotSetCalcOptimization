@@ -75,53 +75,34 @@ void showGradient(sf::RenderWindow* window) {
     window->draw(sf::Sprite(screenTexture));
 }
 
+sf::Color getPixelColorSimple(
+    int   numOfItersInteger,
+    int   maxNumOfIters
+) {
+    size_t colorInd = ((float)numOfItersInteger / maxNumOfIters) * GRADIENT_COLORS_ARRAY_LEN;
+    if (maxNumOfIters == numOfItersInteger)
+        colorInd = GRADIENT_COLORS_ARRAY_LEN - 1;
+
+    sf::Color color = gradientColorsArray[colorInd];
+    return color;
+}
+
 // https://blogen.pasithee.fr/2019/01/06/smooth-coloring-of-mandelbrot/
 // https://gist.github.com/Jofairden/56507b3184c7e16635ba66cd08c3d215
 // https://stackoverflow.com/questions/16500656/which-color-gradient-is-used-to-color-mandelbrot-in-wikipedia
-sf::Color getPixelColorBasedOnIterationAndPoint(
-    size_t numOfItersInteger,
-    float  pointRadius
+sf::Color getPixelColorDoubleLogSmoothing(
+    int   numOfItersInteger,
+    float pointRadius
 ) {
     // from wikipedia
     float log_zn = logf(pointRadius) / 2;
     float nu     = logf(log_zn / LOG2f) / LOG2f;
     float smooth = (float)numOfItersInteger + 1 - nu;
-    //smooth = numOfItersInteger;
 
-    //double smoothed = log2(log2(pointRadius) / 2);  // log_2(log_2(pointRadius))
     double smoothed = 1 - pow(0.99, smooth);
-    //double smoothed = log((float)(numOfIters + 1)) / log(MAX_NUM_OF_POINT_ITERATIONS);
-
-    //int colorInd = (smoothed * GRADIENT_COLORS_ARRAY_LEN);
-    //int colorInd = (int)(sqrt(numOfIters + 10 - smoothed) * GRADIENT_SCALE) % GRADIENT_COLORS_ARRAY_LEN;
-    // printf("colorInd : %d\n", colorInd);
-    // if (numOfIters == MAX_NUM_OF_POINT_ITERATIONS)
-    //     colorInd = GRADIENT_COLORS_ARRAY_LEN - 1;
-
-    // if (numOfIters >= 250) {
-    //     printf("iters : %D, colorInd : %d, smoothed: %Lg\n", numOfIters, colorInd, smoothed);
-    // }
-    // colorInd = GRADIENT_COLORS_ARRAY_LEN - colorInd;
-    //printf(""
-    //int colorInd = ((float)numOfIters / MAX_NUM_OF_POINT_ITERATIONS) * GRADIENT_COLORS_ARRAY_LEN;
     size_t colorInd = (size_t)(smoothed * GRADIENT_COLORS_ARRAY_LEN);
     if (colorInd >= GRADIENT_COLORS_ARRAY_LEN)
         colorInd = GRADIENT_COLORS_ARRAY_LEN - 1;
-    // if (numOfIters >= 250) {
-    //     printf("colorInd : %d\n", colorInd);
-    // }
-
-//     int colorInd = 2047;
-//     if (pointRadius > 1) {
-        // float log_zn = logf(pointRadius) / 2;
-        // float nu = logf(log_zn / logf(2)) / logf(2);
-        // colorInd = numOfIters + 1 - nu;
-//         if (colorInd > 270) printf("colorInd : %d\n", colorInd);
-//         colorInd = ((float)colorInd / 270) * GRADIENT_COLORS_ARRAY_LEN;
-//
-//         // printf("pointRadius : %f\n", pointRadius);
-//         // printf("nu : %f, logzn : %f, colorInd : %d\n", nu, log_zn, colorInd);
-//     }
 
     sf::Color color = gradientColorsArray[colorInd];
     return color;

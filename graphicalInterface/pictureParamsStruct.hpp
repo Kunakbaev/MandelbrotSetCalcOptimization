@@ -2,9 +2,9 @@
 #define GRAPHICAL_INTERFACE_PICTURE_PARAMS_STRUCT_HPP
 
 struct PictureParameters {
-    float pictureCenterX;
-    float pictureCenterY;
-    float scaleFactor;
+    long double pictureCenterX;
+    long double pictureCenterY;
+    long double scaleFactor;
 };
 
 #endif

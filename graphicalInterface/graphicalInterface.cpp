@@ -1,10 +1,10 @@
 #include "graphicalInterface.hpp"
+#include "../calcPointsInfo/calcPointsInfo.hpp"
 
-const float           SPEED_MOVEMENT  = 0.1;
-const float           SCALING_SPEED   = 0.1;
-constexpr const float INC_SCALE_KOEF  = 1.1;
+const long double           SPEED_MOVEMENT  = 0.1;
+constexpr const long double INC_SCALE_KOEF  = 1.3;
 static_assert(INC_SCALE_KOEF - 1 > 1e-6);
-constexpr const float DEC_SCALE_KOEF  = 1.f / INC_SCALE_KOEF;
+constexpr const long double DEC_SCALE_KOEF  = 1.f / INC_SCALE_KOEF;
 static_assert(abs(INC_SCALE_KOEF * DEC_SCALE_KOEF - 1) < 1e-6);
 
 Errors constructGraphicalInterface(
@@ -139,11 +139,13 @@ Errors drawBasedOnPointsInfoMatrix(
     screenTexture.create(windowWidth, windowHeight);
 
     size_t arrInd = 0;
+    int MAX_NUM_OF_ITERS = getSimulationMaxNumOfIters();
     for (int pixelRow = 0; pixelRow < windowHeight; ++pixelRow) {
         for (int pixelCol = 0; pixelCol < windowWidth; ++pixelCol, ++arrInd) {
-            size_t numOfIters  = pointsInfo->escTimesMatrix       [arrInd];
+            int numOfIters     = pointsInfo->escTimesMatrix       [arrInd];
             float  pointRadius = pointsInfo->lastPointRadiusMatrix[arrInd];
-            sf::Color color = getPixelColorBasedOnIterationAndPoint(numOfIters, pointRadius);
+            sf::Color color = getPixelColorSimple(numOfIters, MAX_NUM_OF_ITERS);
+            //sf::Color color = getPixelColorDoubleLogSmoothing(numOfIters, pointRadius);
             screenBuffer.setPixel(pixelCol, pixelRow, color);
         }
     }
