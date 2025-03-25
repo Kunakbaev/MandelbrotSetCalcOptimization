@@ -1,10 +1,11 @@
 #include "graphicalInterface.hpp"
-//#include "mandelbrotColoring.cpp"
 
-const float SPEED_MOVEMENT  = 0.1;
-const float SCALING_SPEED   = 0.1;
-const float INC_SCALE_KOEF  = 1 + SCALING_SPEED;
-const float DEC_SCALE_KOEF  = 1 - SCALING_SPEED;
+const float           SPEED_MOVEMENT  = 0.1;
+const float           SCALING_SPEED   = 0.1;
+constexpr const float INC_SCALE_KOEF  = 1.1;
+static_assert(INC_SCALE_KOEF - 1 > 1e-6);
+constexpr const float DEC_SCALE_KOEF  = 1.f / INC_SCALE_KOEF;
+static_assert(abs(INC_SCALE_KOEF * DEC_SCALE_KOEF - 1) < 1e-6);
 
 Errors constructGraphicalInterface(
     GraphicalInterface* graphInt,
@@ -51,38 +52,50 @@ Errors pictureParametresUpdate(
 ) {
     IF_ARG_NULL_RETURN(graphInt);
 
+    #define IS_KEY_PRESSED(key) sf::Keyboard::isKeyPressed(sf::Keyboard::key)
     float moveSpeed = SPEED_MOVEMENT / graphInt->pictureParams.scaleFactor;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        printf("scale factor : %f\n", graphInt->pictureParams.scaleFactor);
-        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
-        graphInt->pictureParams.pictureCenterX -= moveSpeed;
-        graphInt->wasPictureUpdate = true;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
-        graphInt->pictureParams.pictureCenterX += moveSpeed;
-        graphInt->wasPictureUpdate = true;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-        printf("scale factor : %f\n", graphInt->pictureParams.scaleFactor);
-        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
-        graphInt->pictureParams.pictureCenterY += moveSpeed;
-        graphInt->wasPictureUpdate = true;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        //graphInt->pictureParams.pictureCenterX -= 1000 * (float)graphInt->pictureParams.scaleFactor / graphInt->WINDOW_WIDTH;
-        graphInt->pictureParams.pictureCenterY -= moveSpeed;
-        graphInt->wasPictureUpdate = true;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-            graphInt->pictureParams.scaleFactor *= DEC_SCALE_KOEF;
-            graphInt->wasPictureUpdate = true;
-        } else {
-            graphInt->pictureParams.scaleFactor *= INC_SCALE_KOEF;
-            graphInt->wasPictureUpdate = true;
-        }
-    }
+    // if (IS_KEY_PRESSED(Left)) {
+    //     graphInt->pictureParams.pictureCenterX -= moveSpeed;
+    //     graphInt->wasPictureUpdate = true;
+    // }
+    // if (IS_KEY_PRESSED(Right)) {
+    //     graphInt->pictureParams.pictureCenterX += moveSpeed;
+    //     graphInt->wasPictureUpdate = true;
+    // }
+    // if (IS_KEY_PRESSED(Down)) {
+    //     graphInt->pictureParams.pictureCenterY += moveSpeed;
+    //     graphInt->wasPictureUpdate = true;
+    // }
+    // if (IS_KEY_PRESSED(Up)) {
+    //     graphInt->pictureParams.pictureCenterY -= moveSpeed;
+    //     graphInt->wasPictureUpdate = true;
+    // }
+    // if (IS_KEY_PRESSED(Z)) {
+    //     if (IS_KEY_PRESSED(LShift)) {
+    //         graphInt->pictureParams.scaleFactor *= DEC_SCALE_KOEF;
+    //     } else {
+    //         graphInt->pictureParams.scaleFactor *= INC_SCALE_KOEF;
+    //     }
+    //     graphInt->wasPictureUpdate = true;
+    // }
+
+    #define CHANGE_PIC_PARAM(condition, whatToChange)           \
+        do {                                                    \
+            if (condition) {                                    \
+                graphInt->pictureParams.  whatToChange;         \
+                graphInt->wasPictureUpdate = true;              \
+            }                                                   \
+        } while (0)
+
+    // ASK: how to do this properly?
+    CHANGE_PIC_PARAM(IS_KEY_PRESSED(Left),    pictureCenterX -= moveSpeed);
+    CHANGE_PIC_PARAM(IS_KEY_PRESSED(Right),   pictureCenterX += moveSpeed);
+    CHANGE_PIC_PARAM(IS_KEY_PRESSED(Down),    pictureCenterY += moveSpeed);
+    CHANGE_PIC_PARAM(IS_KEY_PRESSED(Up),      pictureCenterY -= moveSpeed);
+    CHANGE_PIC_PARAM(IS_KEY_PRESSED(Z) &&
+                     IS_KEY_PRESSED(LShift),  scaleFactor *= DEC_SCALE_KOEF);
+    CHANGE_PIC_PARAM(IS_KEY_PRESSED(Z) &&
+                     !IS_KEY_PRESSED(LShift), scaleFactor *= INC_SCALE_KOEF);
 
     return STATUS_OK;
 }
@@ -121,7 +134,7 @@ Errors drawBasedOnPointsInfoMatrix(
     size_t windowHeight = graphInt->WINDOW_HEIGHT;
 
     sf::Image screenBuffer;
-    screenBuffer.create(windowWidth, windowHeight);
+     screenBuffer.create(windowWidth, windowHeight);
     sf::Texture screenTexture;
     screenTexture.create(windowWidth, windowHeight);
 

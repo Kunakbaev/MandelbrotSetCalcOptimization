@@ -42,10 +42,7 @@ Errors calculateMatrixOfPointsInfo(
     size_t resMatrixInd = 0;
     for (int pixelRow = 0; pixelRow < windowHeight; ++pixelRow) {
         for (int pixelCol = 0; pixelCol < windowWidth; ++pixelCol) {
-            // TODO: write function for this
-            // float startX = ((float)pixelCol -  windowWidth / 2 + picCenterX) / (scaleFactor * windowWidth);
-            // float startY = ((float)pixelRow - windowHeight / 2 + picCenterY) / (scaleFactor * windowHeight);
-            float startX = ((float)pixelCol -  windowWidth / 2) / (scaleFactor * windowWidth) + picCenterX;
+            float startX = ((float)pixelCol -  windowWidth / 2) / (scaleFactor * windowWidth)  + picCenterX;
             float startY = ((float)pixelRow - windowHeight / 2) / (scaleFactor * windowHeight) + picCenterY;
 
             float curPointX = startX;
