@@ -1,11 +1,15 @@
 #include "graphicalInterface.hpp"
 #include "../calcPointsInfo/calcPointsInfo.hpp"
 
-const long double           SPEED_MOVEMENT  = 0.1;
-constexpr const long double INC_SCALE_KOEF  = 1.3;
-static_assert(INC_SCALE_KOEF - 1 > 1e-6);
-constexpr const long double DEC_SCALE_KOEF  = 1.f / INC_SCALE_KOEF;
-static_assert(abs(INC_SCALE_KOEF * DEC_SCALE_KOEF - 1) < 1e-6);
+// const long double           SPEED_MOVEMENT  = 0.02;
+// constexpr const long double INC_SCALE_KOEF  = 1.05;
+
+const long double           SPEED_MOVEMENT_WITH_FPS = (long double)1.0;
+constexpr long double       SCALE_SPEED_WITH_FPS    = (long double)2.0;
+
+// static_assert(INC_SCALE_KOEF - 1 > 1e-6);
+// constexpr const long double DEC_SCALE_KOEF  = 1.f / INC_SCALE_KOEF;
+// static_assert(abs(INC_SCALE_KOEF * DEC_SCALE_KOEF - 1) < 1e-6);
 
 Errors constructGraphicalInterface(
     GraphicalInterface* graphInt,
@@ -48,12 +52,18 @@ Errors windowEventsLoop(
 }
 
 Errors pictureParametresUpdate(
-    GraphicalInterface* graphInt
+    GraphicalInterface* graphInt,
+    const float fps
 ) {
     IF_ARG_NULL_RETURN(graphInt);
 
     #define IS_KEY_PRESSED(key) sf::Keyboard::isKeyPressed(sf::Keyboard::key)
-    float moveSpeed = SPEED_MOVEMENT / graphInt->pictureParams.scaleFactor;
+    //float moveSpeed = SPEED_MOVEMENT / graphInt->pictureParams.scaleFactor;
+
+    // move speed according to FPS
+    float moveSpeed = SPEED_MOVEMENT_WITH_FPS / graphInt->pictureParams.scaleFactor;
+    moveSpeed /= fps;
+
     // if (IS_KEY_PRESSED(Left)) {
     //     graphInt->pictureParams.pictureCenterX -= moveSpeed;
     //     graphInt->wasPictureUpdate = true;
@@ -93,9 +103,9 @@ Errors pictureParametresUpdate(
     CHANGE_PIC_PARAM(IS_KEY_PRESSED(Down),    pictureCenterY += moveSpeed);
     CHANGE_PIC_PARAM(IS_KEY_PRESSED(Up),      pictureCenterY -= moveSpeed);
     CHANGE_PIC_PARAM(IS_KEY_PRESSED(Z) &&
-                     IS_KEY_PRESSED(LShift),  scaleFactor *= DEC_SCALE_KOEF);
+                     IS_KEY_PRESSED(LShift),  scaleFactor *= (fps - SCALE_SPEED_WITH_FPS) / fps);
     CHANGE_PIC_PARAM(IS_KEY_PRESSED(Z) &&
-                     !IS_KEY_PRESSED(LShift), scaleFactor *= INC_SCALE_KOEF);
+                     !IS_KEY_PRESSED(LShift), scaleFactor *= (fps + SCALE_SPEED_WITH_FPS) / fps);
 
     return STATUS_OK;
 }
@@ -144,8 +154,8 @@ Errors drawBasedOnPointsInfoMatrix(
         for (int pixelCol = 0; pixelCol < windowWidth; ++pixelCol, ++arrInd) {
             int numOfIters     = pointsInfo->escTimesMatrix       [arrInd];
             float  pointRadius = pointsInfo->lastPointRadiusMatrix[arrInd];
-            sf::Color color = getPixelColorSimple(numOfIters, MAX_NUM_OF_ITERS);
-            //sf::Color color = getPixelColorDoubleLogSmoothing(numOfIters, pointRadius);
+            //sf::Color color = getPixelColorSimple(numOfIters, MAX_NUM_OF_ITERS);
+            sf::Color color = getPixelColorDoubleLogSmoothing(numOfIters, pointRadius);
             screenBuffer.setPixel(pixelCol, pixelRow, color);
         }
     }

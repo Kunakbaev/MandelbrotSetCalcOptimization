@@ -26,18 +26,18 @@ int main() {
     IF_ERR_RETURN(constructGraphicalInterface(&graphInt, &window, WINDOW_WIDTH, WINDOW_HEIGHT));
     showGradient(graphInt.window);
 
-    float fps = -1;
+    float fps = 30.f;
     while (isWindowOpen(&graphInt)) {
         IF_ERR_RETURN(windowEventsLoop(&graphInt));
         IF_ERR_RETURN(closeWindowIfQuitKeyPressed(&graphInt));
 
         auto start = std::chrono::high_resolution_clock::now();
         window.clear();
-        IF_ERR_RETURN(pictureParametresUpdate(&graphInt));
+        IF_ERR_RETURN(pictureParametresUpdate(&graphInt, fps));
         if (graphInt.wasPictureUpdate | 1) {
             //calculateMatrixOfPointsInfo(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
-            calculateMatrixOfPointsInfoOptimizedWithIntrinsics(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
-            //calculateMatrixOfPointsInfoHighResolution(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
+            //calculateMatrixOfPointsInfoOptimizedWithIntrinsics(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
+            calculateMatrixOfPointsInfoHighResolution(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             graphInt.wasPictureUpdate = false;
         }
         IF_ERR_RETURN(drawBasedOnPointsInfoMatrix(&graphInt, &pointsInfo));
