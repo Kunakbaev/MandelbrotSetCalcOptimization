@@ -56,6 +56,11 @@ sf::Color getPixelColorSimple(
     int   maxNumOfIters
 );
 
+Errors showFpsText(
+    GraphicalInterface* graphInt,
+    float fps
+);
+
 Errors drawBasedOnPointsInfoMatrix(
     GraphicalInterface* graphInt,
     PointsInfo*         pointsInfo

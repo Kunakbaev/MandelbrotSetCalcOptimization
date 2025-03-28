@@ -1,5 +1,5 @@
-#define operandType double
-#define functionName calculateMatrixOfPointsInfoHighResolution
+#define operandType float
+#define functionName calculateMatrixOfPointsInfoFloat
 
 #include "calcPointsInfo.hpp"
 #include "commonCalcInfoTemplate.hpp"

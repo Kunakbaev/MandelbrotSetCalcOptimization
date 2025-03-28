@@ -13,7 +13,7 @@ Errors constructPointsInfoStruct(
     const size_t        windowWidth
 );
 
-Errors calculateMatrixOfPointsInfo(
+Errors calculateMatrixOfPointsInfoFloat(
     const size_t                    windowHeight,
     const size_t                    windowWidth,
     const PictureParameters*        picParams,
@@ -28,6 +28,13 @@ Errors calculateMatrixOfPointsInfoOptimizedWithIntrinsics(
 );
 
 Errors calculateMatrixOfPointsInfoHighResolution(
+    const size_t                    windowHeight,
+    const size_t                    windowWidth,
+    const PictureParameters*        picParams,
+    PointsInfo*                     pointsInfo
+);
+
+Errors calculateMatrixOfPointsInfoArrays(
     const size_t                    windowHeight,
     const size_t                    windowWidth,
     const PictureParameters*        picParams,

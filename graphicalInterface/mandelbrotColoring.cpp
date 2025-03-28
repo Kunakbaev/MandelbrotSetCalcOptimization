@@ -80,7 +80,8 @@ sf::Color getPixelColorSimple(
     int   maxNumOfIters
 ) {
     size_t colorInd = ((float)numOfItersInteger / maxNumOfIters) * GRADIENT_COLORS_ARRAY_LEN;
-    if (maxNumOfIters == numOfItersInteger)
+    //printf("colorInd : %d\n", colorInd);
+    if (colorInd >= GRADIENT_COLORS_ARRAY_LEN)
         colorInd = GRADIENT_COLORS_ARRAY_LEN - 1;
 
     sf::Color color = gradientColorsArray[colorInd];

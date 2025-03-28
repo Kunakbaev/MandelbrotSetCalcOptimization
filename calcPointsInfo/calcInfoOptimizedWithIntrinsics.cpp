@@ -1,6 +1,7 @@
 #pragma GCC target("avx2")
 
 #include <immintrin.h>
+#include <inttypes.h>
 
 #include "mandelbrotConsts.hpp"
 #include "calcPointsInfo.hpp"
@@ -22,25 +23,26 @@ Errors calculateMatrixOfPointsInfoOptimizedWithIntrinsics(
     const float picCenterY  = (float)picParams->pictureCenterY;
 
     size_t resMatrixInd = 0;
-    const float dx = 1.0 / (scaleFactor * windowWidth);
-    const float dy = 1.0 / (scaleFactor * windowHeight);
+    const float dx = 1.f / (scaleFactor * (float)windowWidth);
+    const float dy = 1.f / (scaleFactor * (float)windowHeight);
 
-    const float yOffsetValue = - (float)windowHeight / 2 * dy + picCenterY;
-    const __m256 xOffset = _mm256_set1_ps(-  (float)windowWidth / 2 * dx + picCenterX);
-    const __m256 yOffset = _mm256_set1_ps(yOffsetValue);
-    const __m256 dxOffsetReg = _mm256_set_ps(dx * 7, dx * 6, dx * 5, dx * 4, dx * 3, dx * 2, dx, 0);
-    const __m256 dyOffsetReg = _mm256_set_ps(dy * 7, dy * 6, dy * 5, dy * 4, dy * 3, dy * 2, dy, 0);
+    const float  yOffsetValue     = -(float)windowHeight / 2 * dy + picCenterY;
+    const __m256 xOffset          = _mm256_set1_ps(-(float)windowWidth / 2 * dx + picCenterX);
+    const __m256 dxOffsetReg      = _mm256_set_ps(dx * 7, dx * 6, dx * 5, dx * 4, dx * 3, dx * 2, dx, 0);
+    const __m256 maxPointRadiusSq = _mm256_set1_ps(MAX_POINT_RADIUS_SQ);
 
     assert(windowWidth % 8 == 0);
     // with startY += dy error is too big, so I have to use multiplication
-    for (int pixelRow = 0; pixelRow < windowHeight; ++pixelRow) {
-        const __m256 startY = _mm256_set1_ps(pixelRow * dy + yOffsetValue);
+    for (int pixelRow = 0; pixelRow < (int)windowHeight; ++pixelRow) {
+        const __m256 startY = _mm256_set1_ps((float)pixelRow * dy + yOffsetValue);
 
-        for (int pixelCol = 0; pixelCol < windowWidth; pixelCol += 8) {
+        for (int pixelCol = 0; pixelCol < (int)windowWidth; pixelCol += 8) {
             //startX = ((float)pixelCol -  windowWidth / 2) / (scaleFactor * windowWidth)  + picCenterX;
             //startY = ((float)pixelRow - windowHeight / 2) * dy + picCenterY;
             //startX = (float)pixelCol * dx -  (float)windowWidth / 2 * dx  + picCenterX;
-            __m256 startX = _mm256_add_ps(_mm256_add_ps(_mm256_set1_ps(pixelCol * dx), dxOffsetReg), xOffset);
+
+            // TODO: rewrite with += dx
+            __m256 startX = _mm256_add_ps(_mm256_add_ps(_mm256_set1_ps((float)pixelCol * dx), dxOffsetReg), xOffset);
             //startY = (float)pixelRow * dy - (float)windowHeight / 2 * dy + picCenterY;
 
             // float curPointX = startX;
@@ -49,8 +51,9 @@ Errors calculateMatrixOfPointsInfoOptimizedWithIntrinsics(
             __m256 curPointY = startY;
 
             size_t numOfIters = 0;
-            __m256 pointRadius;
-            __m256i iters = _mm256_set1_epi32(0);
+            __m256 pointRadius; // TODO: assert on numOfIters and comment about intit
+            // TODO: assert remove
+            __m256i iters = _mm256_setzero_si256();
             for (; numOfIters < MAX_NUM_OF_POINT_ITERATIONS; ++numOfIters) {
                 // if (abs(curPointX) > MAX_POINT_COORD ||
                 //     abs(curPointY) > MAX_POINT_COORD) break;
@@ -60,9 +63,12 @@ Errors calculateMatrixOfPointsInfoOptimizedWithIntrinsics(
 
                 //pointRadius = curXsq + curYsq;
                 pointRadius = _mm256_add_ps(curXsq, curYsq);
-                __m256 cmp  = _mm256_cmp_ps(pointRadius, _mm256_set1_ps(MAX_POINT_RADIUS_SQ), _CMP_LE_OQ);
-                int mask = _mm256_movemask_ps(cmp);
-                if (!mask) { // all 8 points are out of radius
+                __m256 cmp  = _mm256_cmp_ps(pointRadius, maxPointRadiusSq, _CMP_LE_OQ);
+                // uint8_t mask = _mm256_movemask_ps(cmp);
+                // if (!mask) { // all 8 points are out of radius
+                //     break;
+                // }
+                if (_mm256_testz_ps(cmp, cmp)) {
                     break;
                 }
 
@@ -73,13 +79,23 @@ Errors calculateMatrixOfPointsInfoOptimizedWithIntrinsics(
 
                 // for smooth coloring
                 // blendv is really slow
-//                 __m256 tmp = _mm256_add_ps(_mm256_sub_ps(curXsq, curYsq), startX);
-//                 curPointX = _mm256_blendv_ps(curPointX, tmp, cmp);
-//
-//                 __m256 tmp2 = _mm256_add_ps(_mm256_add_ps(curXY,   curXY), startY);
-//                 curPointY = _mm256_blendv_ps(curPointY, tmp2, cmp);
+                __m256 tmp = _mm256_add_ps(_mm256_sub_ps(curXsq, curYsq), startX);
+                tmp = _mm256_sub_ps(tmp, curPointX);
+                tmp = _mm256_and_ps(tmp, cmp);
+                curPointX = _mm256_add_ps(curPointX, tmp);
+                //curPointX = _mm256_blendv_ps(curPointX, tmp, cmp);
 
-                // for simple coloring
+                __m256 tmp2 = _mm256_add_ps(_mm256_add_ps(curXY,   curXY), startY);
+                tmp2 = _mm256_sub_ps(tmp2, curPointY);
+                tmp2 = _mm256_and_ps(tmp2, cmp);
+                curPointY = _mm256_add_ps(curPointY, tmp2);
+                //curPointY = _mm256_blendv_ps(curPointY, tmp2, cmp);
+
+                // add difference * cmp mask
+                // agner fog cpu instruction
+                //curPointY = _mm256_blend_ps(curPointY, tmp2, mask);
+
+                // // for simple coloring
                 curPointX = _mm256_add_ps(_mm256_sub_ps(curXsq, curYsq), startX);
                 curPointY = _mm256_add_ps(_mm256_add_ps(curXY,   curXY), startY);
 
@@ -91,6 +107,7 @@ Errors calculateMatrixOfPointsInfoOptimizedWithIntrinsics(
             }
 
             //int array[8] = {};
+            // ASK: alignas(sizeof(int))
             _mm256_storeu_si256((__m256i*)(pointsInfo->escTimesMatrix + resMatrixInd), iters);
             //_mm256_storeu_si256((__m256i*)array, iters);
             _mm256_storeu_ps((pointsInfo->lastPointRadiusMatrix + resMatrixInd), pointRadius);
