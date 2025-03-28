@@ -1,3 +1,5 @@
-ERROR_UNPACK(INVALID_ARGUMENT,                  1, "invalid argument, possibly set to NULL\n")
-ERROR_UNPACK(MEMORY_ALLOCATION,                 2, "memory allocation error\n")
-ERROR_UNPACK(COULDNT_LOAD_FONT,                 3, "couldn't load font error\n")
+ERROR_UNPACK(INVALID_ARGUMENT,                   1, "invalid argument, possibly set to NULL\n")
+ERROR_UNPACK(MEMORY_ALLOCATION,                  2, "memory allocation error\n")
+ERROR_UNPACK(COULDNT_LOAD_FONT,                  3, "couldn't load font error\n")
+ERROR_UNPACK(INCORRENT_NUM_OF_ARGS_FOR_PROGRAMM, 4, "incorrect num of args for programm\n")
+ERROR_UNPACK(PERFOMANCE_ALGO_NOT_FOUND,          5, "perfomance algo with such name doesn't exist\n")

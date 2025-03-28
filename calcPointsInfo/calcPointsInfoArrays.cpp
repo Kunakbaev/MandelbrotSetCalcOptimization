@@ -188,7 +188,8 @@ Errors calculateMatrixOfPointsInfoArrays(
                     bool f = pointRadius[i] <= maxPointRadiusSq[i];
                     //printf("flag : %d\n", f);
                     hasAlivePoints += f;
-                    iters[i] += f;
+                    //iters[i] += f;
+                    iters[i] = iters[i] + f;
                 }
 
                 if (!hasAlivePoints)

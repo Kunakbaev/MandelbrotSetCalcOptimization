@@ -23,3 +23,14 @@ Errors constructPointsInfoStruct(
 int getSimulationMaxNumOfIters() {
     return MAX_NUM_OF_POINT_ITERATIONS;
 }
+
+Errors destructPointsInfoStruct(
+    PointsInfo*         pointsInfo
+) {
+    IF_ARG_NULL_RETURN(pointsInfo);
+
+    free(pointsInfo->escTimesMatrix);
+    free(pointsInfo->lastPointRadiusMatrix);
+
+    return STATUS_OK;
+}

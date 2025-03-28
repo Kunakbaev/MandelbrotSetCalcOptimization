@@ -13,7 +13,6 @@ const float FPS_UPDATE_INTERVAL = 200; // in milliseconds
 
 int main() {
     setLoggingLevel(DEBUG);
-    LOG_DEBUG("Hello world!");
 
     precountGradientColorsArray();
 
@@ -25,7 +24,6 @@ int main() {
 
     GraphicalInterface graphInt = {};
     IF_ERR_RETURN(constructGraphicalInterface(&graphInt, &window, WINDOW_WIDTH, WINDOW_HEIGHT));
-    showGradient(graphInt.window);
 
     float fps = 30.f;
     auto lastTimeOfFpsUpdate = std::chrono::high_resolution_clock::now();
@@ -38,11 +36,11 @@ int main() {
         IF_ERR_RETURN(pictureParametresUpdate(&graphInt, fps));
 
         // TODO:
-        if (graphInt.wasPictureUpdate | 1) {
-            //calculateMatrixOfPointsInfoFloat(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
+        if (graphInt.wasPictureUpdate || 1) {
+            calculateMatrixOfPointsInfoFloat(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             //calculateMatrixOfPointsInfoOptimizedWithIntrinsics(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             //calculateMatrixOfPointsInfoHighResolution(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
-            calculateMatrixOfPointsInfoArrays(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
+            //calculateMatrixOfPointsInfoArrays(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             graphInt.wasPictureUpdate = false;
         }
         IF_ERR_RETURN(drawBasedOnPointsInfoMatrix(&graphInt, &pointsInfo));
@@ -60,6 +58,8 @@ int main() {
 
         window.display();
     }
+
+    IF_ERR_RETURN(destructPointsInfoStruct(&pointsInfo));
 
     return 0;
 }

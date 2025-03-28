@@ -13,6 +13,10 @@ Errors constructPointsInfoStruct(
     const size_t        windowWidth
 );
 
+Errors destructPointsInfoStruct(
+    PointsInfo*         pointsInfo
+);
+
 Errors calculateMatrixOfPointsInfoFloat(
     const size_t                    windowHeight,
     const size_t                    windowWidth,

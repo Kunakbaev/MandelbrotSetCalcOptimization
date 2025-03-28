@@ -1,4 +1,4 @@
-#define operandType double
+#define operandType long double
 #define functionName calculateMatrixOfPointsInfoHighResolution
 
 #include "calcPointsInfo.hpp"
