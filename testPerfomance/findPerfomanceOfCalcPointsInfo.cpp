@@ -124,28 +124,28 @@ int main(int argc, const char** argv) {
 /*
 
 -Ofast
-float :                 2431.330322
-floatIntrinsics:        314.371002
-floatArr:               206.541214
+float :                 2431.330322         19.16
+floatIntrinsics:        314.371002          8.383911
+floatArr:               206.541214          7.928277
 
 -O3
-float :                 2546.723877
-floatIntrinsics:        329.517426
-floatArr:               213.129440
+float :                 2546.723877         8.028677
+floatIntrinsics:        329.517426          6.447448
+floatArr:               213.129440          4.512328
 
 -O2
-float :                 2544.549561
-floatIntrinsics:        333.004608
-floatArr:               3592.113281
+float :                 2544.549561         49.054939
+floatIntrinsics:        333.004608          5.936242
+floatArr:               3592.113281         53.228645
 
 -O1
-float :                 2480.524658
-floatIntrinsics:        328.854340
-floatArr:               3064.068848
+float :                 2480.524658         64.678436
+floatIntrinsics:        328.854340          2.331454
+floatArr:               3064.068848         28.810362
 
 no optimization flags
-float :                 4918.506836
-floatIntrinsics:        2724.700928
-floatArr:               16347.489258
+float :                 4918.506836         36.559334
+floatIntrinsics:        2724.700928         4.805051
+floatArr:               16347.489258        210.500427
 
 */

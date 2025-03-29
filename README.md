@@ -31,15 +31,34 @@ Different calculation functions:
 
 * floatArr - another optimization, uses same idea as floatIntrinsic function, but instead of __m256 registers simple arrays are used and functions to effictively work with them (add, sub, mul, compare). This approach achieves higher perfomance, because we can adjust block size (how many operations of cycle we unroll) and we are not limited by 256 bits. Also some intrinsic functions simply don't exist or are too general, so as we know exactly what we need to do, we can write our own methods which will be faster.
 
-Perfomance data:
+Perfomance data (time measured in ms):
+
+| Optimization flags   | float          | floatIntrinsics   | floatArr         |
+|:---------------------|:---------------|:------------------|:-----------------|
+| -Ofast               | 2431 &#177; 19 | 314 &#177; 8      | 206 &#177; 7     |
+| -O3                  | 2546 &#177; 8  | 329 &#177; 6      | 213 &#177; 4     |
+| -O2                  | 2544 &#177; 49 | 333 &#177; 5      | 3592 &#177; 53   |
+| -O1                  | 2480 &#177; 64 | 328 &#177; 2      | 3064 &#177; 28   |
+| no opt flags         | 4918 &#177; 36 | 2724 &#177; 4     | 16347 &#177; 210 |
+
+Relative speed up, comparison inside each column with "no optimization flags" row:
 
 | Optimization Flag     | float       | floatIntrinsics | floatArr    |
 |-----------------------|-------------|-----------------|-------------|
-| -Ofast                | 2431.33     | 314.37          | 206.54      |
-| -O3                   | 2546.72     | 329.52          | 213.13      |
-| -O2                   | 2544.55     | 333.00          | 3592.11     |
-| -O1                   | 2480.52     | 328.85          | 3064.07     |
-| no optimization flags | 4918.51     | 2724.70         | 16347.49    |
+| -Ofast                | 2.02        | 8.67            | 79.15       |
+| -O3                   | 1.93        | 8.27            | 76.70       |
+| -O2                   | 1.93        | 8.18            | 4.55        |
+| -O1                   | 1.98        | 8.29            | 5.34        |
+
+Relative speed up, comparison inside each row with "basic" calc function ("float" column):
+
+| Optimization Flag     | floatIntrinsics | floatArr    |
+|-----------------------|-----------------|-------------|
+| -Ofast                | 7.73            | 11.77       |
+| -O3                   | 7.73            | 11.95       |
+| -O2                   | 7.64            | 0.71        |
+| -O1                   | 7.54            | 0.81        |
+| no optimization flags | 1.81            | 0.30        |
 
 ![perfDataGroupedByOptFlag](testPerfomance/plotsImages/groupedByOptFlag.png)
 
