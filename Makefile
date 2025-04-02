@@ -18,12 +18,31 @@ GRAPHICAL_INTERFACE_DIR		:= graphicalInterface
 CALC_POINTS_INFO_DIR		:= calcPointsInfo
 
 
-SRC_COMMON			 		:= $(ERRORS_HANDLER_DIR)/errorsHandler.cpp						\
-							   $(CALC_POINTS_INFO_DIR)/calcPointsInfo.cpp					\
-							   $(CALC_POINTS_INFO_DIR)/calcPointsInfoFloat.cpp				\
-							   $(CALC_POINTS_INFO_DIR)/calcInfoHighResolution.cpp			\
-							   $(CALC_POINTS_INFO_DIR)/calcPointsInfoArrays.cpp  			\
-							   $(CALC_POINTS_INFO_DIR)/calcInfoOptimizedWithIntrinsics.cpp  \
+SRC_COMMON			 		:= $(ERRORS_HANDLER_DIR)/errorsHandler.cpp											\
+							   $(CALC_POINTS_INFO_DIR)/calcPointsInfo.cpp										\
+							   $(CALC_POINTS_INFO_DIR)/calcPointsInfoFloat.cpp									\
+							   $(CALC_POINTS_INFO_DIR)/calcInfoHighResolution.cpp								\
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays16.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays20.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays24.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays28.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays32.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays36.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays40.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays16.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays20.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays24.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays28.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays32.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays36.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays40.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays44.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays48.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays52.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays56.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays60.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/arrayRealizations/calcPointsInfoArrays64.cpp             \
+							   $(CALC_POINTS_INFO_DIR)/calcInfoOptimizedWithIntrinsics.cpp  					\
 
 
 SRC_DRAW_MANDELBROT 		:= $(SRC_COMMON)												\
@@ -65,6 +84,9 @@ $(BUILD_DIR_PATH)/%.o: $(ERRORS_HANDLER_DIR)/%.cpp | $(BUILD_DIR_TARGET)
 	$(CC) -c $< $(CFLAGS) -o $@
 
 $(BUILD_DIR_PATH)/%.o: $(CALC_POINTS_INFO_DIR)/%.cpp | $(BUILD_DIR_TARGET)
+	$(CC) -c $< $(CFLAGS) -o $@
+
+$(BUILD_DIR_PATH)/%.o: $(CALC_POINTS_INFO_DIR)/arrayRealizations/%.cpp | $(BUILD_DIR_TARGET)
 	$(CC) -c $< $(CFLAGS) -o $@
 
 $(BUILD_DIR_PATH)/%.o: $(GRAPHICAL_INTERFACE_DIR)/%.cpp | $(BUILD_DIR_TARGET)

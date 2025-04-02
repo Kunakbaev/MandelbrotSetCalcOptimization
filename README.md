@@ -35,30 +35,30 @@ Perfomance data (time measured in ms):
 
 | Optimization flags   | float          | floatIntrinsics   | floatArr         |
 |:---------------------|:---------------|:------------------|:-----------------|
-| -Ofast               | 2431 &#177; 19 | 314 &#177; 8      | 206 &#177; 7     |
-| -O3                  | 2546 &#177; 8  | 329 &#177; 6      | 213 &#177; 4     |
-| -O2                  | 2544 &#177; 49 | 333 &#177; 5      | 3592 &#177; 53   |
-| -O1                  | 2480 &#177; 64 | 328 &#177; 2      | 3064 &#177; 28   |
-| no opt flags         | 4918 &#177; 36 | 2724 &#177; 4     | 16347 &#177; 210 |
+| -Ofast               | 2431 &#177; 19 | 314 &#177; 8      | 180 &#177; 7     |
+| -O3                  | 2546 &#177; 8  | 329 &#177; 6      | 187 &#177; 4     |
+| -O2                  | 2544 &#177; 49 | 333 &#177; 5      | 3149 &#177; 53   |
+| -O1                  | 2480 &#177; 64 | 328 &#177; 2      | 3515 &#177; 28   |
+| no opt flags         | 4918 &#177; 36 | 2724 &#177; 4     | 16328 &#177; 210 |
 
 Relative speed up, comparison inside each column with "no optimization flags" row:
 
-| Optimization Flag     | float       | floatIntrinsics | floatArr    |
-|-----------------------|-------------|-----------------|-------------|
-| -Ofast                | 2.02        | 8.67            | 79.15       |
-| -O3                   | 1.93        | 8.27            | 76.70       |
-| -O2                   | 1.93        | 8.18            | 4.55        |
-| -O1                   | 1.98        | 8.29            | 5.34        |
+| Optimization flags   | float   | floatIntrinsics   | floatArr   |
+|:---------------------|:--------|:------------------|:-----------|
+| -Ofast               | 2.02    | 8.68              | 90.71      |
+| -O3                  | 1.93    | 8.28              | 87.32      |
+| -O2                  | 1.93    | 8.18              | 5.19       |
+| -O1                  | 1.98    | 8.3               | 4.65       |
 
 Relative speed up, comparison inside each row with "basic" calc function ("float" column):
 
-| Optimization Flag     | floatIntrinsics | floatArr    |
-|-----------------------|-----------------|-------------|
-| -Ofast                | 7.73            | 11.77       |
-| -O3                   | 7.73            | 11.95       |
-| -O2                   | 7.64            | 0.71        |
-| -O1                   | 7.54            | 0.81        |
-| no optimization flags | 1.81            | 0.30        |
+| Optimization flags   | floatIntrinsics   | floatArr   |
+|:---------------------|:------------------|:-----------|
+| -Ofast               | 7.74              | 13.51      |
+| -O3                  | 7.74              | 13.61      |
+| -O2                  | 7.64              | 0.81       |
+| -O1                  | 7.56              | 0.71       |
+| no opt flags         | 1.81              | 0.3        |
 
 ![perfDataGroupedByOptFlag](testPerfomance/plotsImages/groupedByOptFlag.png)
 
@@ -67,6 +67,14 @@ Relative speed up, comparison inside each row with "basic" calc function ("float
 **Ofast** optimization flag shows best perfomance, as the bottleneck of whole calculation function is cycle for point till it leaves some fixed radius, where we use a lot of floating point operations. Because **Ofast** allows compiler to ignore some restrictions caused by IEEE754 format (no associativity a + (b + c) != (a + b) + c, checks if operand are normalized values, i.e. they are finite (not +- inf) and not nan (not a number)). However it causes some problems, because programm becomes unstable and calculation overflows happen.
 
 **O3** flag seems to be the best, as it's almost as good as **Ofast** optimization flag and programm continues to work correctly.
+
+How fast implementation on array works depending on unroll batch size:
+
+![unroll batch size correlation with speed](testPerfomance/plotsImages/unrollBatchSizes.png)
+
+unroll batch size step is 4, begins with 20 and ends with 56.
+
+At batch size 16, programm still works very long (1500 ms), but then suddenly, at batch size 20, it begins to work way faster (234 ms). Optimal batch size, as my expirements showed, is 24 (in this case programm works only 179 ms)
 
 System info:
 

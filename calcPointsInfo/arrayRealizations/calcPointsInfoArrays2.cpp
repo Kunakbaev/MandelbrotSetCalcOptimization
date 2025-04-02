@@ -4,10 +4,11 @@
 #include <inttypes.h>
 #include <math.h>
 
-#include "mandelbrotConsts.hpp"
-#include "calcPointsInfo.hpp"
+#include "../mandelbrotConsts.hpp"
+#include "../calcPointsInfo.hpp"
 
 const int BATCH_SIZE = 32;
+const int MAX_BATCH_SIZE = 128;
 
 void set1numberToVector(float* __restrict__ array, const float number) {
     for (int i = 0; i < BATCH_SIZE; ++i) {
@@ -19,60 +20,24 @@ void add2Vectors(const float* __restrict__ one, const float* __restrict__ two, f
     for (int i = 0; i < BATCH_SIZE; ++i) {
         result[i] = one[i] + two[i];
     }
-
-    // result[0] = one[0] + two[0];
-    // result[1] = one[1] + two[1];
-    // result[2] = one[2] + two[2];
-    // result[3] = one[3] + two[3];
-    // result[4] = one[4] + two[4];
-    // result[5] = one[5] + two[5];
-    // result[6] = one[6] + two[6];
-    // result[7] = one[7] + two[7];
 }
 
 void add2VectorsUnrestricted(const float* one, const float* two, float* result) {
     for (int i = 0; i < BATCH_SIZE; ++i) {
         result[i] = one[i] + two[i];
     }
-
-    // result[0] = one[0] + two[0];
-    // result[1] = one[1] + two[1];
-    // result[2] = one[2] + two[2];
-    // result[3] = one[3] + two[3];
-    // result[4] = one[4] + two[4];
-    // result[5] = one[5] + two[5];
-    // result[6] = one[6] + two[6];
-    // result[7] = one[7] + two[7];
 }
 
 void sub2Vectors(const float* __restrict__ one, const float* __restrict__ two, float* __restrict__ result) {
     for (int i = 0; i < BATCH_SIZE; ++i) {
         result[i] = one[i] - two[i];
     }
-
-    // result[0] = one[0] - two[0];
-    // result[1] = one[1] - two[1];
-    // result[2] = one[2] - two[2];
-    // result[3] = one[3] - two[3];
-    // result[4] = one[4] - two[4];
-    // result[5] = one[5] - two[5];
-    // result[6] = one[6] - two[6];
-    // result[7] = one[7] - two[7];
 }
 
 void sub2VectorsUnrestricted(const float* one, const float* two, float* result) {
     for (int i = 0; i < BATCH_SIZE; ++i) {
         result[i] = one[i] - two[i];
     }
-
-    // result[0] = one[0] - two[0];
-    // result[1] = one[1] - two[1];
-    // result[2] = one[2] - two[2];
-    // result[3] = one[3] - two[3];
-    // result[4] = one[4] - two[4];
-    // result[5] = one[5] - two[5];
-    // result[6] = one[6] - two[6];
-    // result[7] = one[7] - two[7];
 }
 
 
@@ -80,37 +45,20 @@ void addNum2Vector(const float number, const float* __restrict__ two, float* __r
     for (int i = 0; i < BATCH_SIZE; ++i) {
         result[i] = number + two[i];
     }
-
-    // result[0] = number + two[0];
-    // result[1] = number + two[1];
-    // result[2] = number + two[2];
-    // result[3] = number + two[3];
-    // result[4] = number + two[4];
-    // result[5] = number + two[5];
-    // result[6] = number + two[6];
-    // result[7] = number + two[7];
 }
 
 void mul2Vectors(const float* one, const float* two, float* result) {
     for (int i = 0; i < BATCH_SIZE; ++i) {
         result[i] = one[i] * two[i];
     }
-
-    // result[0] = one[0] * two[0];
-    // result[1] = one[1] * two[1];
-    // result[2] = one[2] * two[2];
-    // result[3] = one[3] * two[3];
-    // result[4] = one[4] * two[4];
-    // result[5] = one[5] * two[5];
-    // result[6] = one[6] * two[6];
-    // result[7] = one[7] * two[7];
 }
 
 Errors calculateMatrixOfPointsInfoArrays(
     const size_t                    windowHeight,
     const size_t                    windowWidth,
     const PictureParameters*        picParams,
-    PointsInfo*                     pointsInfo
+    PointsInfo*                     pointsInfo,
+    const int                       batchSize
 ) {
     IF_ARG_NULL_RETURN(picParams);
     IF_ARG_NULL_RETURN(pointsInfo);
@@ -128,14 +76,14 @@ Errors calculateMatrixOfPointsInfoArrays(
 
     const float xOffsetValue =  -(float)windowWidth / 2 * dx + picCenterX;
     const float yOffsetValue = -(float)windowHeight / 2 * dy + picCenterY;
-    float xOffset[BATCH_SIZE] = {};
+    float xOffset[MAX_BATCH_SIZE] = {};
     //const float dxOffsetReg[] = {dx * 7, dx * 6, dx * 5, dx * 4, dx * 3, dx * 2, dx, 0};
     //const float dxOffsetReg[] = {0, dx, dx * 2, dx * 3, dx * 4, dx * 5, dx * 6, dx * 7};
-    float dxOffsetReg[BATCH_SIZE] = {};
+    float dxOffsetReg[MAX_BATCH_SIZE] = {};
     for (int i = 0; i < BATCH_SIZE; ++i)
         dxOffsetReg[i] = dx * i;
 
-    float maxPointRadiusSq[BATCH_SIZE] = {};
+    float maxPointRadiusSq[MAX_BATCH_SIZE] = {};
     set1numberToVector(maxPointRadiusSq, MAX_POINT_RADIUS_SQ);
     set1numberToVector(xOffset, xOffsetValue);
 
@@ -143,7 +91,7 @@ Errors calculateMatrixOfPointsInfoArrays(
     //assert(windowWidth % BATCH_SIZE == 0);
     // with startY += dy error is too big, so I have to use multiplication
     for (int pixelRow = 0; pixelRow < (int)windowHeight; ++pixelRow) {
-        float startY[BATCH_SIZE] = {};
+        float startY[MAX_BATCH_SIZE] = {};
         set1numberToVector(startY, (float)pixelRow * dy + yOffsetValue);
 
         for (int pixelCol = 0; pixelCol < (int)windowWidth; pixelCol += BATCH_SIZE) {
@@ -152,24 +100,24 @@ Errors calculateMatrixOfPointsInfoArrays(
             //startX = (float)pixelCol * dx -  (float)windowWidth / 2 * dx  + picCenterX;
 
             // TODO: rewrite with += dx
-            float startX[BATCH_SIZE] = {};
+            float startX[MAX_BATCH_SIZE] = {};
             addNum2Vector((float)pixelCol * dx + xOffsetValue, dxOffsetReg, startX);
             //startY = (float)pixelRow * dy - (float)windowHeight / 2 * dy + picCenterY;
 
             // float curPointX = startX;
             // float curPointY = startY;
-            float curPointX[BATCH_SIZE] = {};
-            float curPointY[BATCH_SIZE] = {};
+            float curPointX[MAX_BATCH_SIZE] = {};
+            float curPointY[MAX_BATCH_SIZE] = {};
             memcpy(curPointX, startX, sizeof(float) * BATCH_SIZE);
             memcpy(curPointY, startY, sizeof(float) * BATCH_SIZE);
 
             size_t numOfIters = 0;
             uint32_t isBanned = 0;
-            int         iters[BATCH_SIZE] = {};
-            float      curXsq[BATCH_SIZE] = {};
-            float      curYsq[BATCH_SIZE] = {};
-            float       curXY[BATCH_SIZE] = {};
-            float pointRadius[BATCH_SIZE] = {};
+            int         iters[MAX_BATCH_SIZE] = {};
+            float      curXsq[MAX_BATCH_SIZE] = {};
+            float      curYsq[MAX_BATCH_SIZE] = {};
+            float       curXY[MAX_BATCH_SIZE] = {};
+            float pointRadius[MAX_BATCH_SIZE] = {};
 
             for (; numOfIters < MAX_NUM_OF_POINT_ITERATIONS; ++numOfIters) {
                 mul2Vectors(curPointX, curPointX, curXsq);

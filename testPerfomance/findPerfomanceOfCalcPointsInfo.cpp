@@ -23,11 +23,20 @@ struct PerfomanceAlgo {
     calcPointsInfoFuncPtr func;
 };
 
+Errors calculateMatrixOfPointsInfoArraysHelperFunc(
+    const size_t                    windowHeight,
+    const size_t                    windowWidth,
+    const PictureParameters*        picParams,
+    PointsInfo*                     pointsInfo
+) {
+    return calculateMatrixOfPointsInfoArrays24(windowHeight, windowWidth, picParams, pointsInfo);
+}
+
 PerfomanceAlgo algos[] = {
     {.name = "highRes",         calculateMatrixOfPointsInfoHighResolution          },
     {.name = "float",           calculateMatrixOfPointsInfoFloat                   },
     {.name = "floatIntrinsics", calculateMatrixOfPointsInfoOptimizedWithIntrinsics },
-    {.name = "floatArr",        calculateMatrixOfPointsInfoArrays                  },
+    {.name = "floatArr",        NULL                                               },
 };
 
 const size_t numOfPerfAlgos = sizeof(algos) / sizeof(*algos);
@@ -77,8 +86,14 @@ int main(int argc, const char** argv) {
     float dispersion = 0.f;
     for (int iteration = 0; iteration < NUM_OF_ITERATIONS; ++iteration) {
         auto start = std::chrono::steady_clock::now().time_since_epoch().count();
-        (*funcPtr)(WINDOW_HEIGHT, WINDOW_WIDTH, &pictureParams, &pointsInfo);
+        calculateMatrixOfPointsInfoArrays24(WINDOW_HEIGHT, WINDOW_WIDTH, &pictureParams, &pointsInfo);
+        // if (funcPtr == NULL) {
+        //     calculateMatrixOfPointsInfoArrays(WINDOW_HEIGHT, WINDOW_WIDTH, &pictureParams, &pointsInfo, 32);
+        // } else {
+        //     (*funcPtr)(WINDOW_HEIGHT, WINDOW_WIDTH, &pictureParams, &pointsInfo);
+        // }
         auto end = std::chrono::steady_clock::now().time_since_epoch().count();
+
         // in milliseconds
         float calcTime = (float)(end - start) / CLOCKS_PER_SEC;
         calcTimeArray[iteration] = calcTime;

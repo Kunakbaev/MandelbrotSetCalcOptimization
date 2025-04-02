@@ -37,10 +37,10 @@ int main() {
 
         // TODO:
         if (graphInt.wasPictureUpdate || 1) {
-            calculateMatrixOfPointsInfoFloat(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
+            //calculateMatrixOfPointsInfoFloat(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             //calculateMatrixOfPointsInfoOptimizedWithIntrinsics(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             //calculateMatrixOfPointsInfoHighResolution(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
-            //calculateMatrixOfPointsInfoArrays(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
+            calculateMatrixOfPointsInfoArrays32(WINDOW_HEIGHT, WINDOW_WIDTH, &graphInt.pictureParams, &pointsInfo);
             graphInt.wasPictureUpdate = false;
         }
         IF_ERR_RETURN(drawBasedOnPointsInfoMatrix(&graphInt, &pointsInfo));
